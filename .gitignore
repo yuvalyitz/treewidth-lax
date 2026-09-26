@@ -1,0 +1,7 @@
+build-output.json
+paper.pdf
+paper-web.tar
+lake-manifest.json
+.lake/
+__pycache__/
+*.pyc
