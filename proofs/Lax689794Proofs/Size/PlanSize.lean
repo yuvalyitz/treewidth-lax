@@ -2,7 +2,7 @@ import Lax689794Proofs.Size.Cells
 import Lax689794Proofs.Size.RealC
 
 /-!
-# Size bounds (WP P1), part 12: the size of the (un-normalised) results of `introPlans`
+# Size bounds (P1), part 12: the size of the (un-normalised) results of `introPlans`
 
 If every run of `t` has at most `b` label vertices and at most `Y ≥ 1` sequence entries then every result `r` of
 `introPlans v N t` satisfies `RB (b+1) Y r` and `count r ≤ 2·count t + b + 4`, hence
@@ -97,16 +97,10 @@ theorem pathSubtree_RB {v : ℕ} {S : Finset ℕ} {b Y : ℕ} (hY : 1 ≤ Y) (hS
 theorem RBL.mono {b b' Y Y' : ℕ} (hb : b ≤ b') (hY : Y ≤ Y') {ks : List CT} (h : RBL b Y ks) : RBL b' Y' ks :=
   RBL_iff.2 fun k hk => ((RBL_iff.1 h) k hk).mono hb hY
 
-theorem countL_map_snd (combo : List (Option WPlan × CT × Finset ℕ)) :
-    countL (combo.map (·.2.1)) = (combo.map (fun o => count o.2.1)).sum := by
-  induction combo with
-  | nil => simp [countL]
-  | cons o l ih => simp [countL, ih]
-
 /-! ## region plans -/
 
 mutual
-theorem winPlans_res (v : ℕ) {b Y : ℕ} : ∀ (lo : ℕ) (t : CT), RB b Y t →
+theorem winPlans_res_rec (v : ℕ) {b Y : ℕ} : ∀ (lo : ℕ) (t : CT), RB b Y t →
     ∀ x ∈ winPlans v lo t, RB (b + 1) Y x.2.1 ∧ count x.2.1 ≤ 2 * count t
   | lo, node S y ks, ht, x, hx => by
     obtain ⟨hS, hy, hks⟩ := ht
@@ -125,7 +119,7 @@ theorem winPlans_res (v : ℕ) {b Y : ℕ} : ∀ (lo : ℕ) (t : CT), RB b Y t �
       · simp only [plus1, List.length_map, List.length_drop, List.length_take]; omega
       · simp only [List.length_drop]; omega
       · simp only [count, countL]; omega
-    · obtain ⟨h1, h2⟩ := kidChoices_res v ks hk combo hcombo
+    · obtain ⟨h1, h2⟩ := kidChoices_res_rec v ks hk combo hcombo
       refine ⟨⟨hins, ?_, RBL_iff.2 ?_⟩, ?_⟩
       · simp only [plus1, List.length_map, List.length_drop]; omega
       · intro k' hk'
@@ -133,20 +127,20 @@ theorem winPlans_res (v : ℕ) {b Y : ℕ} : ∀ (lo : ℕ) (t : CT), RB b Y t �
         exact h1 o ho
       · simp only [count]
         omega
-theorem kidChoices_res (v : ℕ) {b Y : ℕ} : ∀ (ks : List CT), (∀ k ∈ ks, RB b Y k) →
+theorem kidChoices_res_rec (v : ℕ) {b Y : ℕ} : ∀ (ks : List CT), (∀ k ∈ ks, RB b Y k) →
     ∀ combo ∈ kidChoices v ks, (∀ o ∈ combo, RB (b + 1) Y o.2.1) ∧ countL (combo.map (·.2.1)) ≤ 2 * countL ks
   | [], _, combo, h => by
     simp only [kidChoices, List.mem_singleton] at h; subst h; simp [countL]
   | k :: ks, hk, combo, h => by
     simp only [kidChoices, List.mem_flatMap, List.mem_map] at h
     obtain ⟨o, ho, combo', hcombo', rfl⟩ := h
-    obtain ⟨h1, h2⟩ := kidChoices_res v ks (fun k' hk' => hk k' (List.mem_cons_of_mem _ hk')) combo' hcombo'
+    obtain ⟨h1, h2⟩ := kidChoices_res_rec v ks (fun k' hk' => hk k' (List.mem_cons_of_mem _ hk')) combo' hcombo'
     have hk0 := hk k (by simp)
     have ho' : RB (b + 1) Y o.2.1 ∧ count o.2.1 ≤ 2 * count k := by
       rcases List.mem_cons.1 ho with rfl | ho
       · exact ⟨hk0.mono (by omega) le_rfl, by simp only []; omega⟩
       · obtain ⟨p, hp, rfl⟩ := List.mem_map.1 ho
-        exact winPlans_res v 0 k hk0 p hp
+        exact winPlans_res_rec v 0 k hk0 p hp
     refine ⟨?_, ?_⟩
     · intro o' hmem
       rcases List.mem_cons.1 hmem with rfl | hmem
@@ -156,6 +150,11 @@ theorem kidChoices_res (v : ℕ) {b Y : ℕ} : ∀ (ks : List CT), (∀ k ∈ ks
       have := ho'.2
       omega
 end
+
+theorem winPlans_res_pair : (type_of% @winPlans_res_rec) ∧ (type_of% @kidChoices_res_rec) :=
+  ⟨@winPlans_res_rec, @kidChoices_res_rec⟩
+
+theorem winPlans_res : type_of% @winPlans_res_rec := winPlans_res_pair.1
 
 theorem wtopPlans_res (v : ℕ) {b Y : ℕ} {t : CT} (ht : RB b Y t) :
     ∀ x ∈ wtopPlans v t, RB (b + 1) Y x.2.1 ∧ count x.2.1 ≤ 2 * count t + 1 := by
@@ -271,10 +270,6 @@ theorem introPlans_vsz_le (v : ℕ) (N : Finset ℕ) {B : Finset ℕ} {kmax : �
   calc x.2.2.vsz ≤ count x.2.2 * (2 * (B.card + 1) + 2 * (2 * kmax + 1) + 6) := h3
     _ ≤ _ := Nat.mul_le_mul h4 (by omega)
 
-theorem introC_length_le' {v : ℕ} {N B : Finset ℕ} {kmax : ℕ} {t : CT} (hw : t.Wf B kmax) :
-    (introC kmax v N t).length ≤ 2 ^ (64 * (B.card + kmax + 2) ^ 3) :=
-  le_trans (introC_length_le_plans _ _ _ _) (introPlans_length_le hw)
-
 /-! ## the size of the plans themselves -/
 
 mutual
@@ -291,34 +286,39 @@ def wszO : Option WPlan → ℕ
 end
 
 mutual
-/-- A region plan of `winPlans v lo t` has at most `2 · count t` constructors. -/
-theorem winPlans_wsz_le (v : ℕ) : ∀ (lo : ℕ) (t : CT), ∀ x ∈ winPlans v lo t, wsz x.1 ≤ 2 * count t
+theorem winPlans_wsz_le_rec (v : ℕ) : ∀ (lo : ℕ) (t : CT), ∀ x ∈ winPlans v lo t, wsz x.1 ≤ 2 * count t
   | lo, node S y ks, x, hx => by
     have hc := count_pos (node S y ks)
     simp only [winPlans, List.mem_append, List.mem_map] at hx
     rcases hx with (⟨f, _, rfl⟩ | ⟨f, _, rfl⟩) | ⟨combo, hcombo, rfl⟩
     · simp only [wsz]; omega
     · simp only [wsz]; omega
-    · have := kidChoices_wsz_le v ks combo hcombo
+    · have := kidChoices_wsz_le_rec v ks combo hcombo
       simp only [wsz, count]
       omega
-theorem kidChoices_wsz_le (v : ℕ) : ∀ (ks : List CT), ∀ combo ∈ kidChoices v ks,
+theorem kidChoices_wsz_le_rec (v : ℕ) : ∀ (ks : List CT), ∀ combo ∈ kidChoices v ks,
     wszL (combo.map (·.1)) ≤ 2 * countL ks
   | [], combo, h => by
     simp only [kidChoices, List.mem_singleton] at h; subst h; simp [wszL, countL]
   | k :: ks, combo, h => by
     simp only [kidChoices, List.mem_flatMap, List.mem_map] at h
     obtain ⟨o, ho, combo', hcombo', rfl⟩ := h
-    have h1 := kidChoices_wsz_le v ks combo' hcombo'
+    have h1 := kidChoices_wsz_le_rec v ks combo' hcombo'
     have hk := count_pos k
     have h2 : wszO o.1 ≤ 2 * count k := by
       rcases List.mem_cons.1 ho with rfl | ho
       · simp [wszO]; omega
       · obtain ⟨p, hp, rfl⟩ := List.mem_map.1 ho
-        simpa [wszO] using winPlans_wsz_le v 0 k p hp
+        simpa [wszO] using winPlans_wsz_le_rec v 0 k p hp
     simp only [List.map_cons, wszL, countL]
     omega
 end
+
+theorem winPlans_wsz_le_pair : (type_of% @winPlans_wsz_le_rec) ∧ (type_of% @kidChoices_wsz_le_rec) :=
+  ⟨@winPlans_wsz_le_rec, @kidChoices_wsz_le_rec⟩
+
+/-- A region plan of `winPlans v lo t` has at most `2 · count t` constructors. -/
+theorem winPlans_wsz_le : type_of% @winPlans_wsz_le_rec := winPlans_wsz_le_pair.1
 
 /-- The path to the run of a plan is shorter than the number of runs. -/
 theorem introPlans_path_le (v : ℕ) (N : Finset ℕ) : ∀ (t : CT), ∀ x ∈ introPlans v N t, x.1.length < count t := by

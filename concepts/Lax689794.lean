@@ -1,4 +1,3 @@
 import Lax689794.GraphWords
 import Lax689794.BodlaenderKloks
 import Lax689794.Bodlaender
-import Lax689794.TreewidthApproximation

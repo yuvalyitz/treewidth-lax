@@ -2,16 +2,19 @@ specVersion: "1"
 id: lax-689794
 leanVersion: "v4.33.0"
 mathlibVersion: "db584cd6d46c92f209a44c0f1c829460d327499d"
-title: "Finding tree decompositions of small treewidth"
+title: "Finding Tree Decompositions of Small Treewidth"
 authors:
   - name: Yuval Itzhaki
     github: yuvalyitz
   - name: Claude
 bibEntries:
-  - "@article{bodlaender1996linear,\n  author  = {Bodlaender, Hans L.},\n  title   = {A linear-time algorithm for finding tree-decompositions of small treewidth},\n  journal = {SIAM Journal on Computing},\n  volume  = {25},\n  number  = {6},\n  pages   = {1305--1317},\n  year    = {1996}\n}\n"
-  - "@article{bodlaender1996efficient,\n  author  = {Bodlaender, Hans L. and Kloks, Ton},\n  title   = {Efficient and constructive algorithms for the pathwidth and treewidth of graphs},\n  journal = {Journal of Algorithms},\n  volume  = {21},\n  number  = {2},\n  pages   = {358--402},\n  year    = {1996}\n}\n"
-  - "@article{althaus2020optimal,\n  author  = {Althaus, Ernst and Ziegler, Sarah},\n  title   = {Optimal tree decompositions revisited: a simpler linear-time {FPT} algorithm},\n  journal = {arXiv:1912.09144},\n  year    = {2020}\n}\n"
+  - "@article{bodlaender1996linear,\n  author  = {Bodlaender, Hans L.},\n  title   = {A Linear-Time Algorithm for Finding Tree-Decompositions of Small Treewidth},\n  journal = {SIAM Journal on Computing},\n  volume  = {25},\n  number  = {6},\n  pages   = {1305--1317},\n  year    = {1996}\n}\n"
+  - "@article{bodlaender1996efficient,\n  author  = {Bodlaender, Hans L. and Kloks, Ton},\n  title   = {Efficient and Constructive Algorithms for the Pathwidth and Treewidth of Graphs},\n  journal = {Journal of Algorithms},\n  volume  = {21},\n  number  = {2},\n  pages   = {358--402},\n  year    = {1996}\n}\n"
+  - "@article{althaus2020optimal,\n  author  = {Althaus, Ernst and Ziegler, Sarah},\n  title   = {Optimal Tree Decompositions Revisited: A Simpler Linear-Time {FPT} Algorithm},\n  journal = {arXiv:1912.09144},\n  year    = {2020}\n}\n"
   - "@book{kloks1994treewidth,\n  author    = {Kloks, Ton},\n  title     = {Treewidth: Computations and Approximations},\n  series    = {Lecture Notes in Computer Science},\n  volume    = {842},\n  publisher = {Springer},\n  year      = {1994}\n}\n"
-  - "@article{robertson1995graph,\n  author  = {Robertson, Neil and Seymour, Paul D.},\n  title   = {Graph minors. {XIII}. The disjoint paths problem},\n  journal = {Journal of Combinatorial Theory, Series B},\n  volume  = {63},\n  number  = {1},\n  pages   = {65--110},\n  year    = {1995}\n}\n"
+  - "@article{robertson1995graph,\n  author  = {Robertson, Neil and Seymour, Paul D.},\n  title   = {Graph Minors. {XIII}. The Disjoint Paths Problem},\n  journal = {Journal of Combinatorial Theory, Series B},\n  volume  = {63},\n  number  = {1},\n  pages   = {65--110},\n  year    = {1995}\n}\n"
   - "@book{cygan2015parameterized,\n  author    = {Cygan, Marek and Fomin, Fedor V. and Kowalik, {\\L}ukasz and Lokshtanov, Daniel and Marx, D{\\'a}niel and Pilipczuk, Marcin and Pilipczuk, Micha{\\l} and Saurabh, Saket},\n  title     = {Parameterized Algorithms},\n  publisher = {Springer},\n  year      = {2015}\n}\n"
 
+paper:
+  folder: paper
+  main: main.tex

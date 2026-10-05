@@ -1,6 +1,87 @@
+import Mathlib.Data.List.Forall2
+import Mathlib.Tactic.Common
 import Lax689794Proofs.Seq.Ext
-import Lax689794Proofs.Seq.Rel
 
+/-! ### `Lax689794Proofs.Seq.Rel` -/
+
+section
+/-!
+# Entrywise order on sequences
+
+`List.Forall₂ (· ≤ ·) a b` is "`a ≤ b`" of the paper (same length, `a_i ≤ b_i`).  Small helper
+lemmas about it.
+-/
+
+namespace Lax689794Proofs.Seq
+
+/-- `a ≤ b` for sequences of the same length (Section 3 preliminaries). -/
+abbrev LeSeq (a b : List ℕ) : Prop := List.Forall₂ (· ≤ ·) a b
+
+theorem LeSeq.refl (a : List ℕ) : LeSeq a a := by
+  induction a with
+  | nil => exact List.Forall₂.nil
+  | cons x a ih => exact List.Forall₂.cons (Nat.le_refl x) ih
+
+theorem LeSeq.trans {a b c : List ℕ} (h1 : LeSeq a b) (h2 : LeSeq b c) : LeSeq a c := by
+  induction h1 generalizing c with
+  | nil => cases h2; exact List.Forall₂.nil
+  | cons hab _ ih =>
+    cases h2 with
+    | cons hbc h2' => exact List.Forall₂.cons (Nat.le_trans hab hbc) (ih h2')
+
+theorem LeSeq.length_eq {a b : List ℕ} (h : LeSeq a b) : a.length = b.length :=
+  List.Forall₂.length_eq h
+
+theorem LeSeq.append {a b c d : List ℕ} (h1 : LeSeq a b) (h2 : LeSeq c d) :
+    LeSeq (a ++ c) (b ++ d) := by
+  induction h1 with
+  | nil => simpa using h2
+  | cons hab _ ih => exact List.Forall₂.cons hab ih
+
+theorem LeSeq.zipWith_add {a b c d : List ℕ} (h1 : LeSeq a b) (h2 : LeSeq c d) :
+    LeSeq (List.zipWith (· + ·) a c) (List.zipWith (· + ·) b d) := by
+  induction h1 generalizing c d with
+  | nil => simp
+  | cons hab _ ih =>
+    cases h2 with
+    | nil => simp
+    | cons hcd h2' =>
+      simp only [List.zipWith_cons_cons]
+      exact List.Forall₂.cons (Nat.add_le_add hab hcd) (ih h2')
+
+theorem leSeq_replicate_left {x : ℕ} {m : List ℕ} (h : ∀ z ∈ m, x ≤ z) :
+    LeSeq (List.replicate m.length x) m := by
+  induction m with
+  | nil => exact List.Forall₂.nil
+  | cons z m ih =>
+    simp only [List.length_cons, List.replicate_succ]
+    exact List.Forall₂.cons (h z (by simp)) (ih fun w hw => h w (by simp [hw]))
+
+theorem leSeq_replicate_right {x : ℕ} {m : List ℕ} (h : ∀ z ∈ m, z ≤ x) :
+    LeSeq m (List.replicate m.length x) := by
+  induction m with
+  | nil => exact List.Forall₂.nil
+  | cons z m ih =>
+    simp only [List.length_cons, List.replicate_succ]
+    exact List.Forall₂.cons (h z (by simp)) (ih fun w hw => h w (by simp [hw]))
+
+theorem LeSeq.flip {a b : List ℕ} (h : List.Forall₂ (fun p q => q ≤ p) a b) : LeSeq b a := by
+  induction h with
+  | nil => exact List.Forall₂.nil
+  | cons hab _ ih => exact List.Forall₂.cons hab ih
+
+theorem LeSeq.flip' {a b : List ℕ} (h : LeSeq a b) : List.Forall₂ (fun p q => q ≤ p) b a := by
+  induction h with
+  | nil => exact List.Forall₂.nil
+  | cons hab _ ih => exact List.Forall₂.cons hab ih
+
+end Lax689794Proofs.Seq
+
+end
+
+/-! ### `Lax689794Proofs.Seq.Dom` -/
+
+section
 /-!
 # The dominance preorder `≺` (Defs 3.7; Lemmas 3.7, 3.9, 3.10; Cor. 3.8, 3.11)
 
@@ -19,9 +100,6 @@ def DomEquiv (a b : List ℕ) : Prop := Dom a b ∧ Dom b a
 
 theorem Dom.refl (a : List ℕ) : Dom a a := ⟨a, a, Ext.refl a, Ext.refl a, LeSeq.refl a⟩
 
-theorem Dom.of_ext_le {a b a' b' : List ℕ} (h1 : Ext a a') (h2 : Ext b b') (h : LeSeq a' b') :
-    Dom a b := ⟨a', b', h1, h2, h⟩
-
 /-- **Lemma 3.7**: `≺` is transitive. -/
 theorem Dom.trans {a b c : List ℕ} (h1 : Dom a b) (h2 : Dom b c) : Dom a c := by
   obtain ⟨a1, b1, ha1, hb1, hab⟩ := h1
@@ -32,15 +110,6 @@ theorem Dom.trans {a b c : List ℕ} (h1 : Dom a b) (h2 : Dom b c) : Dom a c := 
   obtain ⟨x, hx, hxw⟩ := ext_lift e1 hab
   obtain ⟨y, hy, hyw⟩ := ext_lift e2 (R := fun p q => q ≤ p) hbc.flip'
   exact ⟨x, y, ha1.trans hx, hc2.trans hy, LeSeq.trans hxw (LeSeq.flip hyw)⟩
-
-theorem DomEquiv.refl (a : List ℕ) : DomEquiv a a := ⟨Dom.refl a, Dom.refl a⟩
-theorem DomEquiv.symm {a b : List ℕ} (h : DomEquiv a b) : DomEquiv b a := ⟨h.2, h.1⟩
-theorem DomEquiv.trans {a b c : List ℕ} (h1 : DomEquiv a b) (h2 : DomEquiv b c) : DomEquiv a c :=
-  ⟨h1.1.trans h2.1, h2.2.trans h1.2⟩
-
-/-- **Corollary 3.8**: `≡` is an equivalence relation. -/
-theorem domEquiv_equivalence : Equivalence DomEquiv :=
-  ⟨DomEquiv.refl, DomEquiv.symm, DomEquiv.trans⟩
 
 /-- Preorder instance, for `calc`/`gcongr`-style use. -/
 instance : Trans Dom Dom Dom := ⟨Dom.trans⟩
@@ -144,9 +213,6 @@ theorem above_of_red {a b : List ℕ} (h : Red a b) : Above a b := by
     have := Above.append (Above.refl l) (Above.append (above_window hz) (Above.refl r))
     simpa using this
 
-theorem dom_equiv_of_red {a b : List ℕ} (h : Red a b) : DomEquiv b a :=
-  ⟨(below_of_red h).dom, (above_of_red h).dom⟩
-
 theorem below_of_reach {a b : List ℕ} (h : Reach a b) : Below a b := by
   induction h with
   | refl => exact Below.refl _
@@ -172,10 +238,6 @@ theorem dom_typical_iff {a b : List ℕ} : Dom a b ↔ Dom (typical a) (typical 
     exact ((domEquiv_typical a).1.trans h).trans (domEquiv_typical b).2
   · intro h
     exact ((domEquiv_typical a).2.trans h).trans (domEquiv_typical b).1
-
-theorem domEquiv_typical_iff {a b : List ℕ} : DomEquiv a b ↔ DomEquiv (typical a) (typical b) :=
-  ⟨fun h => ⟨dom_typical_iff.mp h.1, dom_typical_iff.mp h.2⟩,
-   fun h => ⟨dom_typical_iff.mpr h.1, dom_typical_iff.mpr h.2⟩⟩
 
 /-- Extensions are equivalent (Lemma 3.9 for repetitions). -/
 theorem domEquiv_of_ext {a a' : List ℕ} (h : Ext a a') : DomEquiv a' a :=
@@ -279,3 +341,5 @@ instance : DecidableRel Dom := fun a b => decidable_of_iff _ dom_iff_domB.symm
 instance : DecidableRel DomEquiv := fun a b => inferInstanceAs (Decidable (Dom a b ∧ Dom b a))
 
 end Lax689794Proofs.Seq
+
+end

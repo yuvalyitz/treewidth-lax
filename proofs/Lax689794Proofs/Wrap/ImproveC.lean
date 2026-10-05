@@ -1,6 +1,25 @@
-import Lax689794Proofs.Wrap.Improve
+import Lax689794Proofs.Chars.Extract
+import Lax689794Proofs.Chars.Restrict
+import Lax689794Proofs.Wrap.Nice
+import Lax689794Proofs.Wrap.Decompose
 import Lax689794Proofs.Wrap.CompressSize
 
+/-! ### `Lax689794Proofs.Wrap.Improve` -/
+
+section
+
+
+namespace Lax689794Proofs.Chars
+
+open Lax689794Proofs.Trees Lax689794Proofs.Trees.NT
+
+end Lax689794Proofs.Chars
+
+end
+
+/-! ### `Lax689794Proofs.Wrap.ImproveC` -/
+
+section
 /-!
 # `improveC`, `decomposeC`: the polynomial-size wrapper (work package P0)
 
@@ -75,9 +94,6 @@ def ImproveCSpec (adj : Adj) (W : Finset ℕ) : Prop :=
     (improveC adj k nt = none ↔ ¬ HasTW adj U k) ∧
     (∀ t', improveC adj k nt = some t' → t'.IsNiceTD adj.graph U k ∧ t'.size ≤ (U.card + 2) * (U.card + 2))
 
-theorem improveCSpec {adj : Adj} {W : Finset ℕ} (hs : adj.SymmOn W) : ImproveCSpec adj W :=
-  fun _ _ _ k hU hnt => improveC_correct hs hU hnt k
-
 /-- Correctness and the size bound of `decomposeC`, on `range i ⊆ W`. -/
 theorem decomposeC_correct_final (adj : Adj) (W : Finset ℕ) (hs : adj.SymmOn W) (k : ℕ) :
     ∀ i, Finset.range i ⊆ W →
@@ -114,10 +130,6 @@ theorem decomposeC_correct_final (adj : Adj) (W : Finset ℕ) (hs : adj.SymmOn W
       refine ⟨a, ?_⟩
       simpa using b
 
-theorem decomposeC_size_le (adj : Adj) (k : ℕ) {W : Finset ℕ} (hs : adj.SymmOn W) :
-    ∀ i, Finset.range i ⊆ W → ∀ t, decomposeC adj k i = some t → t.size ≤ (i + 2) * (i + 2) :=
-  fun i hi t ht => ((decomposeC_correct_final adj W hs k i hi).2 t ht).2
-
 /-- **The word-level statement of `decomposeC`**: the same conclusion as `decompose_words_final`. -/
 theorem decomposeC_words_final {n : ℕ} (G : SimpleGraph (Fin n)) (adj : Adj)
     (hadj : ∀ u v : Fin n, adj u.val v.val = true ↔ G.Adj u v ∨ G.Adj v u) (k : ℕ) :
@@ -132,3 +144,5 @@ theorem decomposeC_words_final {n : ℕ} (G : SimpleGraph (Fin n)) (adj : Adj)
   exact niceDecomposition_encode ⟨this.1, (isTD_congr hcong).1 this.2.1, this.2.2⟩
 
 end Lax689794Proofs.Chars
+
+end

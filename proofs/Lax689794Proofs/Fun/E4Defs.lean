@@ -2,7 +2,7 @@ import Lax689794Proofs.Fun.E2
 import Lax689794Proofs.Fun.E3Assembly
 
 /-!
-# WP E4 (1): the table `e4Tbl` (ids `384 … 447`) — `nbrs`, `forgetTable`, `introTable`, `joinTable`, `tables`
+# the table `e4Tbl` (ids `384 … 447`) — `nbrs`, `forgetTable`, `introTable`, `joinTable`, `tables`
 
 `Adj` (a function) is not a value, so every function that reads adjacency takes the graph word `x : List ℕ` and reads
 `adjOfWord x u v` (`= decide (u < n ∧ v < n ∧ x[1 + u n + v] = 1)`, `n = x[0]`, out of range `= 0`) with the library's `nth`.
@@ -35,7 +35,7 @@ open Lib1
 /-- the number of vertices of a graph word -/
 def nOfWord (x : List ℕ) : ℕ := x.getD 0 0
 
-/-- the adjacency relation of a graph word (identical to `MachineTodo.adjOfWord` of `proofs-todo/Machine.lean`) -/
+
 def adjOfWord (x : List ℕ) : Lax689794Proofs.Chars.Adj :=
   fun u v => decide (u < nOfWord x ∧ v < nOfWord x ∧ x.getD (1 + u * nOfWord x + v) 0 = 1)
 
@@ -108,7 +108,7 @@ def tablesUnTm : Tm := .call fTables [.fst (V 0), .fst (.snd (V 0)), .snd (.snd 
 
 def tablesFirstTm : Tm := .call Lib4.fHead [.call fTables [V 0, V 1, V 2]]
 
-/-- the functions of WP E4: ids `384 … 396` -/
+/-- the functions of E4: ids `384 … 396` -/
 def e4Tbl : ℕ → Option Tm := fun f =>
   match f with
   | 384 => some adjWTm | 385 => some nbrPredTm | 386 => some nbrsTm | 387 => some ntBagTm
@@ -148,12 +148,8 @@ theorem Δ_joinTable : e4Δ fJoinTable = some joinTableTm := by
   simp [e4Δ, layerΔ_ge e4Tbl (show 128 ≤ fJoinTable by decide)]; rfl
 theorem Δ_tables : e4Δ fTables = some tablesTm := by
   simp [e4Δ, layerΔ_ge e4Tbl (show 128 ≤ fTables by decide)]; rfl
-theorem Δ_tablesUn : e4Δ fTablesUn = some tablesUnTm := by
-  simp [e4Δ, layerΔ_ge e4Tbl (show 128 ≤ fTablesUn by decide)]; rfl
-theorem Δ_tablesFirst : e4Δ fTablesFirst = some tablesFirstTm := by
-  simp [e4Δ, layerΔ_ge e4Tbl (show 128 ≤ fTablesFirst by decide)]; rfl
 
-/-- The hypotheses on a table `Δ'` used by every theorem of WP E4: it contains the tables of E1, E2 (with
+/-- The hypotheses on a table `Δ'` used by every theorem of E4: it contains the tables of E1, E2 (with
 `ringTypList` at `E1C.fRingTypList = 152`), E3 and the E4 layer. -/
 structure Ext4 (Δ' : ℕ → Option Tm) : Prop where
   e1 : E1.e1Δ ⊑ Δ'

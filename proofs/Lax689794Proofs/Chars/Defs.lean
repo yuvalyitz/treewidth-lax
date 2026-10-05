@@ -5,29 +5,7 @@ import Lax689794Proofs.Seq.Dom
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Powerset
 
-/-!
-# Characteristics: rooted run trees and the four transitions (definitions only)
 
-The computable core of the Bodlaender–Kloks algorithm as designed in `blueprint/BP3_Chars.lean` and tested in
-`reference/chars.py`.  Every definition is a total, computable Lean function (no `sorry`, no axioms, no
-`noncomputable`); the theorems about them are *statements* in `proofs-todo/Statements.lean`, proved elsewhere.
-
-A *characteristic* of a partial decomposition relative to its boundary `B` is a rooted tree of **runs**:
-
-* `S ⊆ B`  the restricted bag (`bag ∩ B`), shared by all tree nodes of the run;
-* `y`      the typical sequence of the bag sizes along the run (a chain of tree nodes with the same `S`);
-* `kids`   the runs hanging below the last tree node of the run, in canonical order.
-
-Normal form (`norm`): (i) a leaf run whose label is contained in its parent's label is junk; (ii) a run whose only
-kid has the same label is merged with it (`τ` of the concatenation); (iii) a run without kids keeps only its first
-entry.  Kids are sorted by the least vertex they *own* (`key`).
-
-Deviations from the blueprint (all definitional-equality or harmless, see the delivery report):
-`norm` is split as `normNode S y (normL ks)` (`norm_node` is `rfl`); `ringTypList` is the projection of a lattice DP
-that also records one witness path per state (needed by the extraction's `findPath`); `joinC` deduplicates its run
-sequences (the Python reference builds a set); `allChains` uses `sublists` of the sorted list instead of
-`Finset.powerset.toList` (the latter is noncomputable).
--/
 
 namespace Lax689794Proofs.Chars
 
@@ -201,6 +179,7 @@ end
 
 def plus1 (y : List ℕ) : List ℕ := y.map (· + 1)
 
+set_option genSizeOfSpec false in
 /-- A cut of a typical sequence: first type at `f` (the entry `y_f` is duplicated), second type after `f`. -/
 inductive Cut where
   | t1 (f : ℕ)
@@ -211,12 +190,16 @@ def Cut.isT1 : Cut → Bool
   | .t1 _ => true
   | .t2 _ => false
 
+set_option genInjectivity false in
+set_option genSizeOfSpec false in
 /-- How the new vertex's region `W` sits in a run whose first tree node is in `W`: it ends inside the run, or it
 covers the whole run and continues (or not) into each kid run. -/
 inductive WPlan where
   | endAt (c : Cut)
   | whole (kids : List (Option WPlan))
 
+set_option genInjectivity false in
+set_option genSizeOfSpec false in
 /-- An option for the introduction of a vertex: a new leaf branch hanging at a tree node of a run (case (b)), or a
 region `W` meeting the core with its topmost tree node inside a run (case (a)). -/
 inductive Plan where
@@ -326,7 +309,7 @@ def DomCL : List CT → List CT → Prop
 end
 
 mutual
-/-- The decision procedure for `DomC` (`domCB_iff` in `proofs-todo/Statements.lean`). -/
+
 def domCB : CT → CT → Bool
   | node S y ks, node S' y' ks' => decide (S = S') && domB y y' && domCBL ks ks'
 def domCBL : List CT → List CT → Bool

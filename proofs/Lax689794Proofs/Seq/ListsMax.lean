@@ -1,6 +1,57 @@
-import Lax689794Proofs.Seq.Lists
+import Lax689794Proofs.Seq.RingSum
+import Lax689794Proofs.Seq.Concat
 import Lax689794Proofs.Seq.Structure
 
+/-! ### `Lax689794Proofs.Seq.Lists` -/
+
+section
+/-!
+# Lists of integer sequences and Lemma 3.21
+
+A *list* `[a] = (a⁽¹⁾,…,a⁽ⁿ⁾)` is a `List (List ℕ)`.  All notions of the paper's list of
+definitions before Lemma 3.21 are defined here, and the seven items of Lemma 3.21 are proved.
+-/
+
+namespace Lax689794Proofs.Seq
+
+/-- The maximum entry of a list of sequences (`max([a]) = max_i max(a⁽ⁱ⁾)`). -/
+def maxL (A : List (List ℕ)) : ℕ := A.flatten.foldr max 0
+
+/-- Same length *in the strong sense*: same number of sequences and `l(a⁽ⁱ⁾) = l(b⁽ⁱ⁾)`. -/
+def SameShape (A B : List (List ℕ)) : Prop :=
+  List.Forall₂ (fun a b => a.length = b.length) A B
+
+/-- `[a] ≤ [b]` (strong sense): `a⁽ⁱ⁾ ≤ b⁽ⁱ⁾` for each `i`. -/
+def LeL (A B : List (List ℕ)) : Prop := List.Forall₂ LeSeq A B
+
+/-- `[a] + [b]`. -/
+def addL (A B : List (List ℕ)) : List (List ℕ) := List.zipWith zadd A B
+
+/-- The typical list `τ[a]`. -/
+def typicalL (A : List (List ℕ)) : List (List ℕ) := A.map typical
+
+/-- `[b] ∈ E[a]`: each `b⁽ⁱ⁾ ∈ E(a⁽ⁱ⁾)`. -/
+def ExtL (A B : List (List ℕ)) : Prop := List.Forall₂ Ext A B
+
+/-- `[c] ∈ [a] ⊕ [b]`: each `c⁽ⁱ⁾ ∈ a⁽ⁱ⁾ ⊕ b⁽ⁱ⁾` (the lists have the same length). -/
+def RingSumL : List (List ℕ) → List (List ℕ) → List (List ℕ) → Prop
+  | [], [], [] => True
+  | a :: A, b :: B, c :: C => RingSum a b c ∧ RingSumL A B C
+  | _, _, _ => False
+
+/-- `[a] ≺ [b]`: there are `[a*] ∈ E[a]`, `[b*] ∈ E[b]` with `[a*] ≤ [b*]`. -/
+def DomL (A B : List (List ℕ)) : Prop := ∃ A' B', ExtL A A' ∧ ExtL B B' ∧ LeL A' B'
+
+/-- `[a] ≡ [b]`. -/
+def DomEquivL (A B : List (List ℕ)) : Prop := DomL A B ∧ DomL B A
+
+end Lax689794Proofs.Seq
+
+end
+
+/-! ### `Lax689794Proofs.Seq.ListsMax` -/
+
+section
 /-!
 # Lemma 3.3(i) for lists of sequences
 
@@ -9,25 +60,6 @@ import Lax689794Proofs.Seq.Structure
 
 namespace Lax689794Proofs.Seq
 
-theorem maxL_eq (A : List (List ℕ)) : maxL A = maxOf A.flatten := rfl
-
-/-- `max τ[a] = max [a]` (Lemma 3.3(i), list version). -/
-theorem maxL_typicalL (A : List (List ℕ)) : maxL (typicalL A) = maxL A := by
-  unfold maxL typicalL
-  change maxOf _ = maxOf _
-  apply le_antisymm
-  · apply maxOf_le
-    intro x hx
-    apply le_maxOf
-    obtain ⟨a', ha', hx'⟩ := List.mem_flatten.mp hx
-    obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ha'
-    exact List.mem_flatten.mpr ⟨a, ha, mem_of_mem_typical hx'⟩
-  · apply maxOf_le
-    intro x hx
-    obtain ⟨a, ha, hxa⟩ := List.mem_flatten.mp hx
-    have := (typical_upper_iff a (maxOf (A.map typical).flatten)).mp (by
-      intro y hy
-      exact le_maxOf (List.mem_flatten.mpr ⟨typical a, List.mem_map.mpr ⟨a, ha, rfl⟩, hy⟩))
-    exact this x hxa
-
 end Lax689794Proofs.Seq
+
+end

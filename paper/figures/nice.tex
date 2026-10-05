@@ -1,0 +1,35 @@
+% A small graph and a nice tree decomposition of it, drawn for this note.
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=0.56cm,
+  bag/.style={draw,rounded corners=2pt,inner sep=2.5pt,font=\small,fill=gray!8},
+  lab/.style={font=\scriptsize,gray!70!black},
+  v/.style={circle,draw,inner sep=1.2pt,font=\small,fill=white}]
+  % the graph
+  \node[v] (g0) at (-4.6,2.6) {0};
+  \node[v] (g1) at (-4.6,0.8) {1};
+  \node[v] (g2) at (-3.2,1.7) {2};
+  \node[v] (g3) at (-1.9,1.7) {3};
+  \draw (g0)--(g1)--(g2)--(g0) (g2)--(g3);
+  \node[lab] at (-3.2,-0.2) {the graph $G$};
+  % left branch (nodes 0..5)
+  \foreach \i/\b/\y in {0/{$\emptyset$}/0, 1/{$\{0\}$}/1, 2/{$\{0,2\}$}/2, 3/{$\{0,1,2\}$}/3, 4/{$\{1,2\}$}/4, 5/{$\{2\}$}/5}
+    { \node[bag] (a\i) at (0.4,\y) {\b}; \node[lab,left=1pt of a\i] {\i}; }
+  % right branch (nodes 6..9)
+  \foreach \i/\b/\y in {6/{$\emptyset$}/0, 7/{$\{2\}$}/1, 8/{$\{2,3\}$}/2, 9/{$\{2\}$}/3}
+    { \node[bag] (a\i) at (3.4,\y) {\b}; \node[lab,right=1pt of a\i] {\i}; }
+  \node[bag] (a10) at (1.9,6.2) {$\{2\}$}; \node[lab,right=1pt of a10] {10};
+  \node[bag] (a11) at (1.9,7.4) {$\emptyset$}; \node[lab,right=1pt of a11] {11};
+  \foreach \i/\j in {0/1,1/2,2/3,3/4,4/5,6/7,7/8,8/9,10/11} \draw[->] (a\i)--(a\j);
+  \draw[->] (a5)--(a10); \draw[->] (a9)--(a10);
+  % kinds
+  \node[lab,anchor=west] at (4.3,0) {leaf};
+  \node[lab,anchor=west] at (4.3,1) {introduce $2$};
+  \node[lab,anchor=west] at (4.3,2) {introduce $3$};
+  \node[lab,anchor=west] at (4.3,3) {forget $3$};
+  \node[lab,anchor=west] at (4.3,6.2) {join};
+  \node[lab,anchor=west] at (4.3,7.4) {forget $2$};
+\end{tikzpicture}
+\caption{A graph on four vertices and a nice tree decomposition of width~$2$, with the root at the top. The node numbers are the positions in the word of the decomposition: each node is written as its kind, its vertex, and, for the join node~$10$, its second child (node~$5$; its first child is the node just before it).}
+\label{fig:nice}
+\end{figure}

@@ -1,15 +1,10 @@
 import Mathlib.Data.List.Basic
 
-/-!
-# The functional fragment F (WP F0): values, terms, big-step semantics with cost
 
-Definitions copied from `proofs-todo/Machine.lean` (see `PLAN-machine.md` §2).  The compiler of `Ev` to IMP+ lives elsewhere;
-this file has only the syntax and semantics.  Owners of WP F0/F1/V1 extend this package; do not change these definitions without
-telling the other owners (change = coordinate through the coordinator).
--/
 
 namespace Lax689794Proofs.Fun
 
+set_option genSizeOfSpec false in
 /-- Values: naturals and pairs (lists are `cons a (cons b … (nat 0))`). -/
 inductive Val where
   | nat (n : ℕ)
@@ -23,6 +18,8 @@ def Val.maxNat : Val → ℕ
   | .nat n => n
   | .cons a b => max a.maxNat b.maxNat
 
+set_option genInjectivity false in
+set_option genSizeOfSpec false in
 /-- Terms: first-order, call by value, de Bruijn variables into the environment list; recursion through
 the function table; `callv` calls a function whose id is a run-time natural (defunctionalised higher order). -/
 inductive Tm where

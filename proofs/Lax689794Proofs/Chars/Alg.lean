@@ -1,23 +1,6 @@
 import Lax689794Proofs.Chars.Defs
 
-/-!
-# The algorithm: tables (phase A), extraction (phase B), niceification, `improve`, `decompose`
 
-Images of `blueprint/BP4_Tables.lean`, `BP5_Extract.lean`, `BP6_Count.lean` and of `reference/{dp,real,improve}.py`.
-Everything is a total computable Lean function; theorems about it are *statements* in `proofs-todo/Statements.lean`.
-
-**Real trees.**  The Python reference mutates an arena of nodes.  Here the real decomposition is the inductive `RT`,
-and the "analysis" of an `RT` relative to a boundary `B` is the annotated run tree `AR` (`analyze`): every run
-carries its chain of tree nodes (`CNode`: the bag and the *junk* subtrees hanging at that node, i.e. those children
-that are not part of the core), and its kids.  `AR.toRT` reassembles an `RT` (child order is irrelevant to `IsTD`,
-`Width`, `char`).  `applyPlan` = analyse, apply the plan to the `AR` (cut / duplicate a chain node, add `v` to the
-region, hang the branch as junk), reassemble.  `mergeReal` = analyse both trees, walk a lattice path per run, take
-bag unions along the path and the junk of both sides at the first visit of each node, reassemble.
-
-Deviations from the blueprint: see the delivery report (`mergeReal` takes a *join option* and `realJoin` does the
-search that `realize_join` of the reference does, because `extract` calls it with a table entry, not with an element
-of `joinC` of the *actual* characteristics; `Adj`, `NT.under`, `NT.Good`, `PTD`, `nbrs` are here).
--/
 
 namespace Lax689794Proofs.Trees.NT
 
@@ -93,11 +76,15 @@ def tables (adj : Adj) (k : ℕ) : NT → List CT
 
 /-! ## phase B: analysis of a real tree -/
 
+set_option genInjectivity false in
+set_option genSizeOfSpec false in
 /-- A node of a chain of a run: its bag and the junk subtrees hanging at it (children outside the core). -/
 structure CNode where
   bag : Finset ℕ
   junk : List RT
 
+set_option genInjectivity false in
+set_option genSizeOfSpec false in
 /-- The analysis of a real tree relative to a boundary: a run tree whose runs carry their chains of tree nodes. -/
 inductive AR where
   | run (S : Finset ℕ) (chain : List CNode) (kids : List AR)

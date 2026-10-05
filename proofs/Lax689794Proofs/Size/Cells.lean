@@ -1,7 +1,7 @@
 import Lax689794Proofs.Size.Tables
 
 /-!
-# Size bounds (WP P1), part 6: the size of a characteristic (its cons-tree)
+# Size bounds (P1), part 6: the size of a characteristic (its cons-tree)
 
 `CT.vsz` is the number of cells of the cons-tree view of a characteristic used by the machine
 (`encCT (node S y ks) = cons (list S) (cons (list y) (list of kids))`, a list of length `n` having `2n + 1` cells).

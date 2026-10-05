@@ -2,7 +2,7 @@ import Lax689794Proofs.Chars.TablesJoin
 import Lax689794Proofs.Chars.CountTables
 
 /-!
-# Size bounds (WP P1), part 1: counting trees by their number of runs
+# Size bounds (P1), part 1: counting trees by their number of runs
 
 `CountCard` counts the well-formed characteristics via the bracket word `enc`; the count there uses the global bound
 `count ≤ runBound |B|`.  Here the same injection is used with an arbitrary bound `m` on the number of runs and *no*

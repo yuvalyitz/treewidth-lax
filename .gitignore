@@ -5,3 +5,12 @@ lake-manifest.json
 .lake/
 __pycache__/
 *.pyc
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+/paper/main.pdf
+.DS_Store
+/notes/

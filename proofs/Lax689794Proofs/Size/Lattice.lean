@@ -2,7 +2,7 @@ import Lax689794Proofs.Size.Join
 import Lax689794Proofs.Chars.Lattice
 
 /-!
-# Size bounds (WP P1), part 5: the lattice dynamic programme of `joinC`
+# Size bounds (P1), part 5: the lattice dynamic programme of `joinC`
 
 Every cell of the lattice DP (`Cell a b i j C`) holds at most `4^(L+1)` states, where `L` bounds the entries of the ring
 sums (`L = L₁ + L₂` for entries `≤ L₁`, `≤ L₂`): the states of a cell have pairwise distinct `τ`-components, and these are

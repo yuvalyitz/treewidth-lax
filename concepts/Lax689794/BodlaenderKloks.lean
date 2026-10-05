@@ -3,7 +3,7 @@ import Lax808846.Ram
 
 /-!
 ---
-title: Optimal tree decompositions from a given one
+title: Optimal Tree Decompositions from a Given One
 type: theorem
 ---
 **The theorem of Bodlaender and Kloks.** For all $k$ and $\ell$ there is a linear-time
@@ -18,11 +18,13 @@ a simpler linear-time FPT algorithm"*, arXiv:1912.09144 (2020), §3; the stateme
 2.10 of H. L. Bodlaender, *"A linear-time algorithm for finding tree-decompositions of small
 treewidth"*, SIAM Journal on Computing 25 (1996) 1305–1317, where it is used as a black box.
 
-This is the *second stage* of Bodlaender's algorithm, `Bodlaender.niceDecomposition_computable`
-being the first: the latter builds the decomposition of width at most $2k+1$ this one
-consumes.
+The formalized improvement result is derived from the exact graph algorithm. When `l ≤ k`,
+the program returns the supplied decomposition; otherwise it runs the graph algorithm with
+bound `k`. Since `k < l` in the latter case, its parameter-dependent bound is also bounded
+in terms of `l`. The underlying characteristic dynamic program is used within the graph
+algorithm's vertex-by-vertex construction.
 
-# Formalization notes
+# Formalization Notes
 
 The input is one word: the graph (see `GraphWords`), the two numbers `k` and `l`, and the word
 of a nice tree decomposition of width at most `l`. The graph word states its own length, so the
@@ -37,9 +39,9 @@ produce any one of them. The output is nice, where the theorem produces an arbit
 decomposition, because the conversion is one more linear-time pass and every consumer wants
 the nice form.
 
-The bound is `c * 2 ^ (c * l ^ 3) * (|input| + 2) ^ c`. The paper's is linear in the number of
-vertices; on a word RAM given the adjacency matrix the input has length quadratic in the number
-of vertices, and the statement is polynomial in it, which is all a consumer needs. The
+The bound is `c * 2 ^ (c * l ^ 3) * (|input| + 2) ^ c`. The polynomial factor uses the full encoded input length, including the supplied decomposition.
+Only the graph portion has length quadratic in the number of vertices; no size bound on the
+supplied decomposition is assumed. The
 condition on the word length is an explicit inequality against `2 ^ W`, on every entry of the
 input: the tables of the algorithm have size `2 ^ (c * l ^ 3)` times a polynomial in the length,
 so a machine of too small a word length cannot hold them.

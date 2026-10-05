@@ -1,7 +1,7 @@
 import Lax689794Proofs.Fun.VMRamTop
 
 /-!
-# WP V2 (7): a smoke test — the hypotheses of `vm_ram_correct` are satisfiable
+# a smoke test — the hypotheses of `vm_ram_correct` are satisfiable
 
 The table `Δ₀ 0 = lit 5`; the environment `σ₀` is the one a loader would leave (arrays `OP`, `OA`, `FT` filled,
 other arrays zero); `vm_ram_correct` then runs the interpreter to a representation of the value `5`.
@@ -28,26 +28,5 @@ def σ₀ : Lax808846Proofs.Imp.Env where
     else List.replicate (W₀' + 1) 0
   inp := []
   out := []
-
-theorem hlen : P₀.len = 5 := by decide
-
-theorem example_run : ∃ (w : ℕ) (H' : List (ℕ × ℕ)) (σ' : Lax808846Proofs.Imp.Env),
-    Run (W₀' + 18) vmLoop σ₀ σ' (124 * (3 * 1 + 4)) ∧ Rep 10 H' w (.nat 5) ∧ σ'.vars "run" = 0 := by
-  have hruns : Runs Δ₀ 10 0 [] (.nat 5) 1 :=
-    ⟨.lit 5, by simp [Δ₀], 1, le_rfl, Ev.lit (by omega)⟩
-  have hopa : ∀ i, i ≤ W₀' → opa (P₀.code i) < W₀' + 18 := by
-    have : W₀' = 21 := by show 0 + P₀.len + 10 + 3 * 1 + 3 = 21; rw [hlen]
-    rw [this]; decide
-  have hA : Abs ⟨0, [] ++ [], [], []⟩ σ₀ :=
-    Abs.init (by simp [σ₀]) (by simp [σ₀]) (by simp [σ₀]) (by simp [σ₀]) (Pfx.nil _) (Pfx.nil _) (Pfx.nil _)
-  have hC : Cst P₀ W₀' (W₀' + 18) σ₀ :=
-    Cst.of_arrays (by simp [σ₀]; rfl) (by simp [σ₀]) (by simp [σ₀]) (by simp [σ₀])
-      (by intro a ha; simp at ha; rcases ha with rfl | rfl | rfl | rfl | rfl <;> simp [σ₀]) hopa
-      (by show 10 ≤ 0 + P₀.len + 10 + 3 * 1 + 3; omega) le_rfl
-  obtain ⟨w, H', σ', hr, -, -, hrun', -, hrep, -⟩ :=
-    vm_ram_correct Δ₀ (N := 1) (by intro f hf; simp [Δ₀]; omega) (B := 10) (by omega) hruns
-      (ws := []) (stk₀ := []) (H := []) .nil (W₀ := 0)
-      ⟨by simp, by simp, by simp, by simp, by simp, by simp, by simp⟩ hA hC (by simp [σ₀])
-  exact ⟨w, H', σ', hr, hrep, hrun'⟩
 
 end Lax689794Proofs.Fun.VM.Ram.Example

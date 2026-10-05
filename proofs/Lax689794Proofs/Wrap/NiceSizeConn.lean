@@ -1,12 +1,6 @@
 import Lax689794Proofs.Wrap.NiceSize
 
-/-!
-# `niceOf_size_le` under connectedness (C8a)
 
-`(niceOf t).size ≤ (|V| + 2) * (size t + 1)` for a connected `t` (the bound of `proofs-todo/Statements.lean`).
-The proof charges each parent-child edge `|b \ X| + |X \ b|`, where the forgotten vertices `b \ X` are counted once
-overall thanks to connectedness (`Σ_k |V_k \ X| ≤ |V \ X|` by the pairwise clause).
--/
 
 namespace Lax689794Proofs.Chars
 
@@ -100,7 +94,7 @@ theorem niceOf_size_conn_key : ∀ (c : ℕ) (t : RT), t.Conn → t.verts.card �
       have : (l.map (fun k' => (conv X (niceOf k')).size + 1)).sum ≤ (l.map (fun k' => (conv X (niceOf k')).size + 1)).sum := le_rfl
       nlinarith
 
-/-- **`niceOf_size_le`** for a connected tree: the bound of `proofs-todo/Statements.lean`. -/
+
 theorem niceOf_size_le {t : RT} (hc : t.Conn) : (niceOf t).size ≤ (t.verts.card + 2) * (t.size + 1) := by
   have := niceOf_size_conn_key t.verts.card t hc le_rfl
   have h1 : t.rootBag.card + 2 * (t.verts \ t.rootBag).card ≤ 2 * t.verts.card := by

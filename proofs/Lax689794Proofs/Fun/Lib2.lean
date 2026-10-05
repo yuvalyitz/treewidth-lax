@@ -3,7 +3,7 @@ import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Sort
 
 /-!
-# WP F1, layer 2: `foldr`, `reverse`, `dedup`, insertion sort (= `List.mergeSort` on total preorders)
+# F1, layer 2: `foldr`, `reverse`, `dedup`, insertion sort (= `List.mergeSort` on total preorders)
 
 Ids `32 …`.  Extends `Lib1.Δ` through `layerΔ`.
 -/

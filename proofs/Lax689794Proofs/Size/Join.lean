@@ -1,7 +1,7 @@
 import Lax689794Proofs.Size.Alph
 
 /-!
-# Size bounds (WP P1), part 2: `joinC`, `joinKids`, `ringTypList`
+# Size bounds (P1), part 2: `joinC`, `joinKids`, `ringTypList`
 
 * `joinC_nodup`  (unconditional): `joinC` produces a duplicate-free list; `joinKids` too;
 * `joinC_count`  : every result of `joinC a b` has the shape (number of runs) of `a`;
